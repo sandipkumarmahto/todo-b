@@ -4,11 +4,11 @@ import { User } from "./user.model.js";
 
 const taskSchema=new Schema(
     {
-        tittle:{
+        title:{
             type:String,
             required:true
         },
-        description:{
+        description:{ 
             type:String,
             required:true,
         },
@@ -23,8 +23,8 @@ const taskSchema=new Schema(
         }
     },
     {
-        timeseries:true
-    }
+        timestamps:true
+    } 
 )
 
 export const Task=mongoose.model('Task',taskSchema);

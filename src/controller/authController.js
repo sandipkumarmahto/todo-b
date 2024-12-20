@@ -1,4 +1,6 @@
+import jwt from "jsonwebtoken";
 import { User } from "../model/user.model.js";
+ 
 
 const generatAccessAndRefreshTokens = async(userId) => {
     try {
@@ -6,11 +8,11 @@ const generatAccessAndRefreshTokens = async(userId) => {
         const accessToken= await user.generateAccessToken()
         const refreshToken= await user.generateRefreshToken()
         user.refreshToken=refreshToken
-        const user1=await user.save({ validateBeforeSave: false })
+        const user1=await user.save({ validateBeforeSave: false }) 
         return{refreshToken, accessToken}
     } catch (error) {
         console.log(error)
-    }
+    } 
 }
 
 const loginUser = async (req, res) => {
@@ -68,35 +70,21 @@ const logOutUser=async(req,res) =>{
     res.status(200).clearCookie('refreshToken').clearCookie('accessToken').json({message:"user logout successfully"})
 }
 
-//refresh tokens
-// const refreshToken = req.body.refreshToken;
-  
-//     if (!refreshToken) {
-//       return res.status(400).json({ message: "Refresh token required" });
-//     }
-  
-//     try {
-//       // Verify the refresh token
-//       jwt.verify(
-//         refreshToken,
-//         process.env.REFRESH_TOKEN_SECRET,
-//         async (err, user) => {
-//           if (err) {
-//             return res.status(403).json({ message: "Invalid or expired refresh token" });
-//           }
-  
-//           // Generate a new access token
-//           const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-//             expiresIn: "15m", // Access token lifespan
-//           });
-  
-//           res.status(200).json({ accessToken });
-//         }
-//       );
-//     } catch (err) {
-//       res
-//         .status(500)
-//         .json({ message: "Internal server error", error: err.message });
-//     }
+const refreshAccessToken= async(req,res) =>{
+    const refreshToken=req.body.refreshToken;
+    if(!refreshToke){
+        res.status(400).json({message:"refresh token is required"})
+    }
+    const decodedToken=jwt.verify(refreshToken.process.env.REFRESH_TOKEN_SECRET);
 
-export {loginUser, logOutUser};
+    const user=await User.findById(decodedToken._id);
+    if(!user){
+        return res.status(403).json({ error: "Invalid or expired refresh token" });
+    }
+    
+    const accessToken=user.generateAccessToken();
+
+    res.status(200).json({accessToken})
+}
+
+export {loginUser, logOutUser, refreshAccessToken};
