@@ -4,4 +4,4 @@ const testing1=async (req,res) => {
 
     res.status(200).clearCookie('refreshToken').clearCookie('accessToken').json({message:"user logout successfully"})
 }
-export { testing1 }; 
+export { testing1 };    

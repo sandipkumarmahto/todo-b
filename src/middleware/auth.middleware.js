@@ -11,7 +11,7 @@ export const verifyJWT = async (req, res, next) => {
      
     
     if (!token) {
-      res.status(401).json({ message: "unauthorized request" });
+      return res.status(401).json({ message: "unauthorized request" });
     }
     
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET); 
@@ -21,14 +21,14 @@ export const verifyJWT = async (req, res, next) => {
     );
     
     if (!user) {
-      res.status(401).json({ message: "invalid access token" }); 
+      return res.status(401).json({ message: "invalid access token" }); 
     }
 
     req.user = user;
     console.log("in auth middleware")
     next();
   } catch (error) {
-    res.status(401).json({ message: "something error" });
+    return res.status(401).json({ message: "something error" });
     console.log(error);
   } 
 };
